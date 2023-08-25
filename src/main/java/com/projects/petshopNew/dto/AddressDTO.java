@@ -2,9 +2,13 @@ package com.projects.petshopNew.dto;
 
 import com.projects.petshopNew.entities.Address;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class AddressDTO {
+public class AddressDTO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private Long id;
     private String street;
     private String city;

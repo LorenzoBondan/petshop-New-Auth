@@ -45,10 +45,7 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private AssistanceRepository assistanceRepository;
-
-    @Autowired
-    private AuthService authService;
-
+    
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
@@ -60,7 +57,6 @@ public class UserService implements UserDetailsService {
 
     @Transactional(readOnly = true)
     public UserDTO findByCpf(String cpf){
-        authService.validateSelfOrAdmin(cpf);
         User entity = repository.findByCpf(cpf).orElseThrow(() -> new ResourceNotFoundException("At UserService, User Cpf not found " + cpf));
         return new UserDTO(entity);
     }
@@ -99,7 +95,6 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserDTO update(String cpf, UserDTO dto){
-        authService.validateSelfOrAdmin(cpf);
         User entity = repository.findByCpf(cpf).orElseThrow(() -> new ResourceNotFoundException("At UserService, User Cpf not found " + cpf));
         copyDtoToEntity(dto, entity);
         entity = repository.save(entity);
@@ -109,7 +104,6 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void delete(String cpf) {
         try {
-            authService.validateSelfOrAdmin(cpf);
             // delete contact, address, assistances, pets and contact from user
             User user = repository.findByCpf(cpf).orElseThrow(() -> new ResourceNotFoundException("At UserService, User Cpf not found " + cpf));
             addressRepository.deleteById(user.getClient().getAddress().getId());

@@ -1,7 +1,10 @@
 package com.projects.petshopNew.resources;
 
 import com.projects.petshopNew.dto.AddressDTO;
+import com.projects.petshopNew.repositories.AddressRepository;
 import com.projects.petshopNew.services.AddressService;
+import com.projects.petshopNew.services.AuthService;
+import com.projects.petshopNew.services.exceptions.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -19,6 +22,12 @@ public class AddressResource {
     @Autowired
     private AddressService service;
 
+    @Autowired
+    private AuthService authService;
+
+    @Autowired
+    private AddressRepository repository;
+
     @Operation(summary = "Update the user address", method = "PUT")
     @ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Updated successfully"),
@@ -31,6 +40,7 @@ public class AddressResource {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<AddressDTO> update(@PathVariable Long id, @RequestBody AddressDTO dto){
+        authService.validateSelfOrAdmin(repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Address id not found")).getClient().getUser().getCpf());
         dto = service.update(id, dto);
         return ResponseEntity.ok().body(dto);
     }

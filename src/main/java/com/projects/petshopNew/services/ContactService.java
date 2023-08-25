@@ -18,13 +18,9 @@ public class ContactService {
     @Autowired
     private ClientRepository clientRepository;
 
-    @Autowired
-    private AuthService authService;
-
     @Transactional
     public ContactDTO update(Long id, ContactDTO dto){
         Contact entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Contact Id not found: " + id));
-        authService.validateSelfOrAdmin(entity.getClient().getUser().getCpf());
         copyDtoToEntity(dto, entity);
         entity = repository.save(entity);
         return new ContactDTO(entity);

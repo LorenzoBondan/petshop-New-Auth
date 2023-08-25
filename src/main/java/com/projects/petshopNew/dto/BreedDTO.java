@@ -2,11 +2,15 @@ package com.projects.petshopNew.dto;
 
 import com.projects.petshopNew.entities.Breed;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class BreedDTO {
+public class BreedDTO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private Long id;
     private String description;
     private final List<Long> petsId = new ArrayList<>();
@@ -16,7 +20,7 @@ public class BreedDTO {
     public BreedDTO(Breed entity){
         this.id = entity.getId();
         this.description = entity.getDescription();
-
+        this.petsId.clear();
         entity.getPets().forEach(pet -> this.petsId.add(pet.getId()));
     }
 

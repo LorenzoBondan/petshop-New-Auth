@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -11,17 +13,19 @@ import java.util.Set;
 
 @Entity
 @Table(name = "tb_user")
-public class User implements UserDetails {
+public class User implements UserDetails, Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     @Id
     @Column(unique = true)
     private String cpf;
     private String name;
     private String password;
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne
     @JoinColumn(name = "client_id")
     private Client client;
 
-    @ManyToMany(fetch = FetchType.LAZY) // <- EAGER was generating double results in Breed.petsIds
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "tb_user_role",
                 joinColumns = @JoinColumn(name = "user_cpf"),
                 inverseJoinColumns = @JoinColumn(name = "role_id"))

@@ -30,9 +30,6 @@ public class ClientService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private AuthService authService;
-
     @Transactional(readOnly = true)
     public Page<ClientDTO> findAllPaged(Pageable pageable){
         Page<Client> list = repository.findAll(pageable);
@@ -42,14 +39,12 @@ public class ClientService {
     @Transactional(readOnly = true)
     public ClientDTO findById(Long id){
         Client entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Client Id not found: " + id));
-        authService.validateSelfOrAdmin(entity.getUser().getCpf());
         return new ClientDTO(entity);
     }
 
     @Transactional
     public ClientDTO update(Long id, ClientDTO dto){
         Client entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Client Id not found: " + id));
-        authService.validateSelfOrAdmin(entity.getUser().getCpf());
         copyDtoToEntity(dto, entity);
         entity = repository.save(entity);
         return new ClientDTO(entity);

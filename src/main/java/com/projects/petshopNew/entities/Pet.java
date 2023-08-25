@@ -2,6 +2,8 @@ package com.projects.petshopNew.entities;
 
 import jakarta.persistence.*;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +11,9 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tb_pet")
-public class Pet {
+public class Pet implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,14 +22,14 @@ public class Pet {
     private Instant birthDate;
     @Column(columnDefinition = "TEXT")
     private String imgUrl;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "breed_id")
     private Breed breed;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
 
-    @OneToMany(mappedBy = "pet", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "pet")
     private List<Assistance> assistances = new ArrayList<>();
 
     public Pet(){}

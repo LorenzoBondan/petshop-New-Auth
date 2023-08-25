@@ -2,9 +2,13 @@ package com.projects.petshopNew.dto;
 
 import com.projects.petshopNew.entities.Contact;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class ContactDTO {
+public class ContactDTO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private Long id;
     private String tag;
     private Boolean type;

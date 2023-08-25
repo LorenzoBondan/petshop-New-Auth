@@ -2,12 +2,16 @@ package com.projects.petshopNew.dto;
 
 import com.projects.petshopNew.entities.Client;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ClientDTO {
+public class ClientDTO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private Long id;
     private String name;
     private Instant registerDate;

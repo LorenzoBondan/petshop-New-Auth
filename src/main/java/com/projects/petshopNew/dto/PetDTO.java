@@ -2,18 +2,22 @@ package com.projects.petshopNew.dto;
 
 import com.projects.petshopNew.entities.Pet;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class PetDTO {
+public class PetDTO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private Long id;
     private String name;
     private Instant birthDate;
     private String imgUrl;
     private Long clientId;
-    private BreedDTO breed;
+    private Long breedId;
     private final List<AssistanceDTO> assistances = new ArrayList<>();
 
     public PetDTO(){}
@@ -24,18 +28,18 @@ public class PetDTO {
         this.birthDate = entity.getBirthDate();
         this.imgUrl = entity.getImgUrl();
         this.clientId = entity.getClient().getId();
-        this.breed = new BreedDTO(entity.getBreed());
+        this.breedId = entity.getBreed().getId();
 
         entity.getAssistances().forEach(assistance -> this.assistances.add(new AssistanceDTO(assistance)));
     }
 
-    public PetDTO(Long id, String name, Instant birthDate, String imgUrl, Long clientId, BreedDTO breed) {
+    public PetDTO(Long id, String name, Instant birthDate, String imgUrl, Long clientId, Long breedId) {
         this.id = id;
         this.name = name;
         this.birthDate = birthDate;
         this.imgUrl = imgUrl;
         this.clientId = clientId;
-        this.breed = breed;
+        this.breedId = breedId;
     }
 
     public Long getId() {
@@ -78,12 +82,12 @@ public class PetDTO {
         this.clientId = clientId;
     }
 
-    public BreedDTO getBreed() {
-        return breed;
+    public Long getBreedId() {
+        return breedId;
     }
 
-    public void setBreed(BreedDTO breed) {
-        this.breed = breed;
+    public void setBreedId(Long breedId) {
+        this.breedId = breedId;
     }
 
     public List<AssistanceDTO> getAssistances() {

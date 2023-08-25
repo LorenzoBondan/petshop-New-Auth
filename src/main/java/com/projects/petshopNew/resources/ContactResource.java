@@ -1,7 +1,10 @@
 package com.projects.petshopNew.resources;
 
 import com.projects.petshopNew.dto.ContactDTO;
+import com.projects.petshopNew.repositories.ContactRepository;
+import com.projects.petshopNew.services.AuthService;
 import com.projects.petshopNew.services.ContactService;
+import com.projects.petshopNew.services.exceptions.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -18,6 +21,12 @@ public class ContactResource {
     @Autowired
     private ContactService service;
 
+    @Autowired
+    private AuthService authService;
+
+    @Autowired
+    private ContactRepository repository;
+
     @ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Updated successfully"),
 			@ApiResponse(responseCode = "400", description = "Bad Request"), // invalid data, String in Integer field
@@ -29,6 +38,7 @@ public class ContactResource {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<ContactDTO> update(@PathVariable Long id, @RequestBody ContactDTO dto){
+        authService.validateSelfOrAdmin(repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Contact id not found")).getClient().getUser().getCpf());
         dto = service.update(id, dto);
         return ResponseEntity.ok().body(dto);
     }

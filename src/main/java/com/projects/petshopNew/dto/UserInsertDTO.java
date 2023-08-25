@@ -1,7 +1,10 @@
 package com.projects.petshopNew.dto;
 
-public class UserInsertDTO extends UserDTO{
+import java.io.Serial;
 
+public class UserInsertDTO extends UserDTO{
+    @Serial
+    private static final long serialVersionUID = 1L;
     private String password;
 
     public UserInsertDTO(){

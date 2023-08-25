@@ -23,7 +23,7 @@ public class AuthService {
     public User authenticated() {
         try {
             String username = customUserUtil.getLoggedUsername();
-            return repository.findByCpf(username).orElseThrow(() -> new ResourceNotFoundException("At UserService, User Cpf not found " + username));
+            return repository.findByCpf(username).orElseThrow(() -> new ResourceNotFoundException("At AuthService, User Cpf not found " + username));
         }
         catch (Exception e) {
             throw new UsernameNotFoundException("Invalid user");
@@ -38,6 +38,11 @@ public class AuthService {
         if(!me.getCpf().equals(userCpf)) {
             throw new ForbiddenException("Access denied. Should be self or admin");
         }
+    }
+
+    public boolean isAdmin() {
+        User user = authenticated();
+        return user.hasRole("ROLE_ADMIN");
     }
 
     @Transactional(readOnly = true)

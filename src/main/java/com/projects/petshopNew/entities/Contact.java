@@ -3,11 +3,15 @@ package com.projects.petshopNew.entities;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "tb_contact")
-public class Contact {
+public class Contact implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

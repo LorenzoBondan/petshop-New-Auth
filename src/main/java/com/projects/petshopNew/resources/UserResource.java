@@ -2,6 +2,7 @@ package com.projects.petshopNew.resources;
 
 import com.projects.petshopNew.dto.UserDTO;
 import com.projects.petshopNew.dto.UserInsertDTO;
+import com.projects.petshopNew.services.AuthService;
 import com.projects.petshopNew.services.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,6 +24,9 @@ public class UserResource {
 
     @Autowired
     private UserService service;
+
+    @Autowired
+    private AuthService authService;
 
     @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Successfully search"),
@@ -47,6 +51,7 @@ public class UserResource {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT')")
     @GetMapping(value = "/{cpf}")
     public ResponseEntity<UserDTO> findByCpf(@PathVariable String cpf) {
+        authService.validateSelfOrAdmin(cpf);
         UserDTO dto = service.findByCpf(cpf);
         return ResponseEntity.ok().body(dto);
     }
@@ -75,6 +80,7 @@ public class UserResource {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT')")
     @PutMapping(value = "/{cpf}")
     public ResponseEntity<UserDTO> update(@PathVariable String cpf, @RequestBody UserDTO dto){
+        authService.validateSelfOrAdmin(cpf);
         dto = service.update(cpf, dto);
         return ResponseEntity.ok().body(dto);
     }
@@ -89,6 +95,7 @@ public class UserResource {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT')")
     @DeleteMapping(value = "/{cpf}")
     public ResponseEntity<UserDTO> delete(@PathVariable String cpf){
+        authService.validateSelfOrAdmin(cpf);
         service.delete(cpf);
         return ResponseEntity.noContent().build();
     }

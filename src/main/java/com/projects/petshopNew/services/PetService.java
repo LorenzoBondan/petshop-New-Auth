@@ -12,7 +12,6 @@ import com.projects.petshopNew.services.exceptions.DataBaseException;
 import com.projects.petshopNew.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,9 +33,6 @@ public class PetService {
     @Autowired
     private AssistanceRepository assistanceRepository;
 
-    @Autowired
-    private AuthService authService;
-
     @Transactional(readOnly = true)
     public Page<PetDTO> findAllPaged(Pageable pageable){
         Page<Pet> list = repository.findAll(pageable);
@@ -46,7 +42,6 @@ public class PetService {
     @Transactional(readOnly = true)
     public PetDTO findById(Long id){
         Pet entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id not found " + id));
-        authService.validateSelfOrAdmin(entity.getClient().getUser().getCpf());
         return new PetDTO(entity);
     }
 
@@ -61,7 +56,6 @@ public class PetService {
     @Transactional
     public PetDTO update(Long id, PetDTO dto){
         Pet entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id not found " + id));
-        authService.validateSelfOrAdmin(entity.getClient().getUser().getCpf());
         copyDtoToEntity(dto, entity);
         entity = repository.save(entity);
         return new PetDTO(entity);
@@ -84,7 +78,7 @@ public class PetService {
         entity.setBirthDate(dto.getBirthDate());
         entity.setImgUrl(dto.getImgUrl());
         entity.setClient(clientRepository.getReferenceById(dto.getClientId()));
-        entity.setBreed(breedRepository.getReferenceById(dto.getBreed().getId()));
+        entity.setBreed(breedRepository.getReferenceById(dto.getBreedId()));
 
         entity.getAssistances().clear();
         for(AssistanceDTO assistanceDTO : dto.getAssistances()){

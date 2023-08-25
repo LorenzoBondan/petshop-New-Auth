@@ -2,11 +2,15 @@ package com.projects.petshopNew.dto;
 
 import com.projects.petshopNew.entities.User;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class UserDTO {
+public class UserDTO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private String cpf;
     private String name;
     private Long clientId;

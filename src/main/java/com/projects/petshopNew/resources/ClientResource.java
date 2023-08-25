@@ -1,7 +1,10 @@
 package com.projects.petshopNew.resources;
 
 import com.projects.petshopNew.dto.ClientDTO;
+import com.projects.petshopNew.repositories.ClientRepository;
+import com.projects.petshopNew.services.AuthService;
 import com.projects.petshopNew.services.ClientService;
+import com.projects.petshopNew.services.exceptions.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +22,12 @@ public class ClientResource {
 
     @Autowired
     private ClientService service;
+
+    @Autowired
+    private AuthService authService;
+
+    @Autowired
+    private ClientRepository repository;
 
     @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Successfully search"),
@@ -43,6 +52,7 @@ public class ClientResource {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<ClientDTO> findById(@PathVariable Long id){
+        authService.validateSelfOrAdmin(repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Client id not found")).getUser().getCpf());
         ClientDTO dto = service.findById(id);
         return ResponseEntity.ok().body(dto);
     }
@@ -58,6 +68,7 @@ public class ClientResource {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<ClientDTO> update(@PathVariable Long id, @RequestBody ClientDTO dto){
+        authService.validateSelfOrAdmin(repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Client id not found")).getUser().getCpf());
         dto = service.update(id, dto);
         return ResponseEntity.ok().body(dto);
     }

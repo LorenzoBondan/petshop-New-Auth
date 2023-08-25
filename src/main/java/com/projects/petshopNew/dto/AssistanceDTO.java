@@ -2,10 +2,14 @@ package com.projects.petshopNew.dto;
 
 import com.projects.petshopNew.entities.Assistance;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
-public class AssistanceDTO {
+public class AssistanceDTO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private Long id;
     private String description;
     private Double assistanceValue;

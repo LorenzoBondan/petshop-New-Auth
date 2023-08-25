@@ -55,6 +55,7 @@ public class ResourceServerConfig {
                 //.requestMatchers(PUBLIC).permitAll()
                 //.requestMatchers(HttpMethod.GET).permitAll()
                 //.requestMatchers(new AntPathRequestMatcher("/pets/**")).permitAll()
+                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().permitAll()); //// <-
                 //.anyRequest().authenticated());
 

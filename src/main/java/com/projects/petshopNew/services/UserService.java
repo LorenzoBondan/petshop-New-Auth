@@ -7,6 +7,7 @@ import com.projects.petshopNew.entities.*;
 import com.projects.petshopNew.projections.UserDetailsProjection;
 import com.projects.petshopNew.repositories.*;
 import com.projects.petshopNew.services.exceptions.DataBaseException;
+import com.projects.petshopNew.services.exceptions.ForbiddenException;
 import com.projects.petshopNew.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -45,9 +48,12 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private AssistanceRepository assistanceRepository;
-    
+
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AuthService authService;
 
     @Transactional(readOnly = true)
     public Page<UserDTO> findAllPaged(String name, Pageable pageable){
@@ -66,7 +72,7 @@ public class UserService implements UserDetailsService {
         User entity = new User();
         entity.setCpf(dto.getCpf());
 
-        copyDtoToEntity(dto, entity);
+        copyDtoToEntity(dto, entity, 1);
 
         entity.setPassword(passwordEncoder.encode(dto.getPassword()));
 
@@ -96,7 +102,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public UserDTO update(String cpf, UserDTO dto){
         User entity = repository.findByCpf(cpf).orElseThrow(() -> new ResourceNotFoundException("At UserService, User Cpf not found " + cpf));
-        copyDtoToEntity(dto, entity);
+        copyDtoToEntity(dto, entity, 2);
         entity = repository.save(entity);
         return new UserDTO(entity);
     }
@@ -121,12 +127,23 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public void copyDtoToEntity(UserDTO dto, User entity){
+    public void copyDtoToEntity(UserDTO dto, User entity, Integer operation){
         entity.setCpf(dto.getCpf());
         entity.setName(dto.getName());
 
         if(dto.getClientId() != null){
             entity.setClient(clientRepository.getReferenceById(dto.getClientId()));
+        }
+
+        if (operation == 2 && !authService.isAdmin()) {
+            List<Role> updatedRoles = new ArrayList<>();
+            for (RoleDTO roleDTO : dto.getRoles()) {
+                Role role = roleRepository.getReferenceById(roleDTO.getId());
+                updatedRoles.add(role);
+            }
+            if (!entity.getRoles().containsAll(updatedRoles) || !new HashSet<>(updatedRoles).containsAll(entity.getRoles())) {
+                throw new ForbiddenException("You can't change your roles");
+            }
         }
 
         entity.getRoles().clear();

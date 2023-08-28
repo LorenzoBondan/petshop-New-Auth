@@ -109,22 +109,18 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void delete(String cpf) {
-        try {
-            // delete contact, address, assistances, pets and contact from user
-            User user = repository.findByCpf(cpf).orElseThrow(() -> new ResourceNotFoundException("At UserService, User Cpf not found " + cpf));
-            addressRepository.deleteById(user.getClient().getAddress().getId());
-            contactRepository.deleteById(user.getClient().getContact().getId());
-            for(Pet pet : user.getClient().getPets()){
-                for(Assistance assistance : pet.getAssistances()){
-                    assistanceRepository.deleteById(assistance.getId());
-                }
-                petRepository.deleteById(pet.getId());
+        // delete contact, address, assistances, pets and contact from user
+        User user = repository.findByCpf(cpf).orElseThrow(() -> new ResourceNotFoundException("At UserService, User Cpf not found " + cpf));
+        addressRepository.deleteById(user.getClient().getAddress().getId());
+        contactRepository.deleteById(user.getClient().getContact().getId());
+        for(Pet pet : user.getClient().getPets()){
+            for(Assistance assistance : pet.getAssistances()){
+                assistanceRepository.deleteById(assistance.getId());
             }
-            clientRepository.deleteById(user.getClient().getId());
-            repository.deleteByCpf(cpf);
-        } catch (DataIntegrityViolationException e) {
-            throw new DataBaseException("Integrity Violation");
+            petRepository.deleteById(pet.getId());
         }
+        clientRepository.deleteById(user.getClient().getId());
+        repository.deleteByCpf(cpf);
     }
 
     public void copyDtoToEntity(UserDTO dto, User entity, Integer operation){
@@ -135,7 +131,7 @@ public class UserService implements UserDetailsService {
             entity.setClient(clientRepository.getReferenceById(dto.getClientId()));
         }
 
-        if (operation == 2 && !authService.isAdmin()) {
+        if (operation == 2 && !authService.isAdmin() && !entity.hasRole("ROLE_ADMIN")) {
             List<Role> updatedRoles = new ArrayList<>();
             for (RoleDTO roleDTO : dto.getRoles()) {
                 Role role = roleRepository.getReferenceById(roleDTO.getId());

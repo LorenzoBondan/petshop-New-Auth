@@ -1,6 +1,8 @@
 package com.projects.petshopNew.dto;
 
 import com.projects.petshopNew.entities.Client;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -13,9 +15,12 @@ public class ClientDTO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private Long id;
+    @NotBlank(message = "Required field")
     private String name;
+    @PastOrPresent(message = "Register date must be past or present")
     private Instant registerDate;
     private String imgUrl;
+    @NotBlank(message = "Required field")
     private String userCpf;
     private AddressDTO address;
     private ContactDTO contact;

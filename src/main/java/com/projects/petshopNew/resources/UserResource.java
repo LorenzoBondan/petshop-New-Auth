@@ -7,6 +7,7 @@ import com.projects.petshopNew.services.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -62,7 +63,7 @@ public class UserResource {
     @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
     @PostMapping
-    public ResponseEntity<UserDTO> insert(@RequestBody UserInsertDTO dto){
+    public ResponseEntity<UserDTO> insert(@Valid @RequestBody UserInsertDTO dto){
         UserDTO newDto = service.insert(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{cpf}")
                 .buildAndExpand(dto.getCpf()).toUri();
@@ -79,7 +80,7 @@ public class UserResource {
     })
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT')")
     @PutMapping(value = "/{cpf}")
-    public ResponseEntity<UserDTO> update(@PathVariable String cpf, @RequestBody UserDTO dto){
+    public ResponseEntity<UserDTO> update(@PathVariable String cpf, @Valid @RequestBody UserDTO dto){
         authService.validateSelfOrAdmin(cpf);
         dto = service.update(cpf, dto);
         return ResponseEntity.ok().body(dto);

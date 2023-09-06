@@ -1,6 +1,7 @@
 package com.projects.petshopNew.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import org.springframework.lang.Nullable;
 
 import java.io.Serial;
@@ -22,7 +23,7 @@ public class Address implements Serializable {
     private String city;
     @Nullable
     private String neighborhood;
-    @Nullable
+    //@Nullable
     private Integer complement;
     @Nullable
     private String tag;

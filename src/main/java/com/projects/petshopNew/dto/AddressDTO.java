@@ -2,7 +2,6 @@ package com.projects.petshopNew.dto;
 
 import com.projects.petshopNew.entities.Address;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
@@ -14,10 +13,12 @@ public class AddressDTO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private Long id;
-    @NotBlank
+    @NotBlank(message = "Required field")
     @Size(min = 3, max = 80, message = "Street must have at least 3 characters and max 80")
     private String street;
+    @NotBlank(message = "Required field")
     private String city;
+    @NotBlank(message = "Required field")
     private String neighborhood;
     @Positive(message = "Complement must be positive")
     private Integer complement;

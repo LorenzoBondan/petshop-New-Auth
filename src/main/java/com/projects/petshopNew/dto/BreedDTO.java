@@ -1,6 +1,7 @@
 package com.projects.petshopNew.dto;
 
 import com.projects.petshopNew.entities.Breed;
+import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -12,6 +13,7 @@ public class BreedDTO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private Long id;
+    @NotBlank(message = "Required field")
     private String description;
     private final List<Long> petsId = new ArrayList<>();
 

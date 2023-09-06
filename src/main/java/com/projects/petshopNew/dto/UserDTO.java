@@ -1,6 +1,8 @@
 package com.projects.petshopNew.dto;
 
 import com.projects.petshopNew.entities.User;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -11,7 +13,11 @@ import java.util.Objects;
 public class UserDTO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
+    @NotBlank(message = "Required field")
+    @Size(min = 14, max = 14, message = "CPF must have 14 characters")
     private String cpf;
+    @NotBlank(message = "Required field")
+    @Size(min = 3, max = 50, message = "Name must have at least 3 characters and max 50")
     private String name;
     private Long clientId;
     private final List<RoleDTO> roles = new ArrayList<>();

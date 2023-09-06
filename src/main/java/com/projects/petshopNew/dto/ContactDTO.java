@@ -1,6 +1,7 @@
 package com.projects.petshopNew.dto;
 
 import com.projects.petshopNew.entities.Contact;
+import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -12,6 +13,7 @@ public class ContactDTO implements Serializable {
     private Long id;
     private String tag;
     private Boolean type;
+    @NotBlank(message = "Required field")
     private String contactValue;
     private Long clientId;
 

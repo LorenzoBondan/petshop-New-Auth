@@ -5,6 +5,7 @@ import com.projects.petshopNew.services.BreedService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -59,7 +60,7 @@ public class BreedResource {
     })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
-    public ResponseEntity<BreedDTO> insert(@RequestBody BreedDTO dto){
+    public ResponseEntity<BreedDTO> insert(@Valid @RequestBody BreedDTO dto){
         dto = service.insert(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(dto.getId()).toUri();
@@ -76,7 +77,7 @@ public class BreedResource {
     })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "/{id}")
-    public ResponseEntity<BreedDTO> update(@PathVariable Long id, @RequestBody BreedDTO dto){
+    public ResponseEntity<BreedDTO> update(@PathVariable Long id, @Valid @RequestBody BreedDTO dto){
         dto = service.update(id, dto);
         return ResponseEntity.ok().body(dto);
     }

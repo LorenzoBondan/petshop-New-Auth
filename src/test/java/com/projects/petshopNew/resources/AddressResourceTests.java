@@ -17,20 +17,18 @@ import java.util.Map;
 
 public class AddressResourceTests {
 
-    private String clientUsername, clientPassword, adminUsername, adminPassword;
     private String adminToken, clientToken, invalidToken;
     private Long existingId, nonExistingId;
     private Map<String, Object> putAddressInstance;
-
 
     @BeforeEach
     public void setUp() throws JSONException{
         baseURI = "http://localhost:8080";
 
-        clientUsername = "123.456.789-00";
-        clientPassword = "123456";
-        adminUsername = "000.123.456-78";
-        adminPassword = "123456";
+        String clientUsername = "123.456.789-00";
+        String clientPassword = "123456";
+        String adminUsername = "000.123.456-78";
+        String adminPassword = "123456";
 
         clientToken = TokenUtil.obtainAccessToken(clientUsername, clientPassword);
         adminToken = TokenUtil.obtainAccessToken(adminUsername, adminPassword);
@@ -47,7 +45,7 @@ public class AddressResourceTests {
     }
 
     @Test
-    public void updateShouldReturnObjectWhenIdExistsAndAdminLogged() throws JSONException {
+    public void updateShouldReturnObjectWhenIdExistsAndAdminLogged() {
         JSONObject address = new JSONObject(putAddressInstance);
         existingId = 1L;
 
@@ -70,7 +68,7 @@ public class AddressResourceTests {
     }
 
     @Test
-    public void updateShouldReturnNotFoundWhenIdDoesNotExistsAndAdminLogged() throws Exception{
+    public void updateShouldReturnNotFoundWhenIdDoesNotExistsAndAdminLogged() {
         JSONObject address = new JSONObject(putAddressInstance);
         nonExistingId = 1000L;
 
@@ -84,12 +82,12 @@ public class AddressResourceTests {
                 .put("/addresses/{id}", nonExistingId)
         .then()
                 .statusCode(404)
-                .body("error", equalTo("Not Found"))
+                .body("error", equalTo("Address id not found"))
                 .body("status", equalTo(404));
     }
 
     @Test
-    public void updateShouldReturnBadRequestWhenIdExistsAndAdminLoggedAndInvalidComplement() throws JSONException{
+    public void updateShouldReturnBadRequestWhenIdExistsAndAdminLoggedAndInvalidComplement() {
         putAddressInstance.put("complement", "aaaaa");
         JSONObject address = new JSONObject(putAddressInstance);
         existingId = 1L;
@@ -107,7 +105,7 @@ public class AddressResourceTests {
     }
 
     @Test
-    public void updateShouldReturnInternalServerErrorWhenIdExistsAndAdminLoggedAndInvalidClientId() throws JSONException{
+    public void updateShouldReturnInternalServerErrorWhenIdExistsAndAdminLoggedAndInvalidClientId() {
         putAddressInstance.put("clientId", 1000);
         JSONObject address = new JSONObject(putAddressInstance);
         existingId = 1L;
@@ -125,7 +123,7 @@ public class AddressResourceTests {
     }
 
     @Test
-    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndAdminLoggedAndStreetIsInvalid() throws JSONException{
+    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndAdminLoggedAndStreetIsInvalid() {
         putAddressInstance.put("street", "a");
         JSONObject address = new JSONObject(putAddressInstance);
         existingId = 1L;
@@ -143,7 +141,61 @@ public class AddressResourceTests {
     }
 
     @Test
-    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndAdminLoggedAndComplementIsNegative() throws JSONException{
+    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndAdminLoggedAndStreetIsBlank() {
+        putAddressInstance.put("street", "");
+        JSONObject address = new JSONObject(putAddressInstance);
+        existingId = 1L;
+
+        given()
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer " + adminToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(address.toString())
+                .when()
+                .put("/addresses/{id}", existingId)
+                .then()
+                .statusCode(422);
+    }
+
+    @Test
+    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndAdminLoggedAndCityIsBlank() {
+        putAddressInstance.put("city", "");
+        JSONObject address = new JSONObject(putAddressInstance);
+        existingId = 1L;
+
+        given()
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer " + adminToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(address.toString())
+                .when()
+                .put("/addresses/{id}", existingId)
+                .then()
+                .statusCode(422);
+    }
+
+    @Test
+    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndAdminLoggedAndNeighborhoodIsBlank() {
+        putAddressInstance.put("neighborhood", "");
+        JSONObject address = new JSONObject(putAddressInstance);
+        existingId = 1L;
+
+        given()
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer " + adminToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(address.toString())
+                .when()
+                .put("/addresses/{id}", existingId)
+                .then()
+                .statusCode(422);
+    }
+
+    @Test
+    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndAdminLoggedAndComplementIsNegative() {
         putAddressInstance.put("complement", -20);
         JSONObject address = new JSONObject(putAddressInstance);
         existingId = 1L;
@@ -159,4 +211,78 @@ public class AddressResourceTests {
         .then()
                 .statusCode(422);
     }
+
+    @Test
+    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndAdminLoggedAndComplementIsZero() {
+        putAddressInstance.put("complement", 0);
+        JSONObject address = new JSONObject(putAddressInstance);
+        existingId = 1L;
+
+        given()
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer " + adminToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(address.toString())
+                .when()
+                .put("/addresses/{id}", existingId)
+                .then()
+                .statusCode(422);
+    }
+
+    @Test
+    public void updateShouldReturnObjectWhenIdExistsAndClientLoggedTryToUpdateOwnAddress(){
+        putAddressInstance.put("complement", 4);
+        JSONObject address = new JSONObject(putAddressInstance);
+        existingId = 1L;
+
+        given()
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer " + clientToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(address.toString())
+                .when()
+                .put("/addresses/{id}", existingId)
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    public void updateShouldReturnForbiddenWhenIdExistsAndClientLoggedAndTryToUpdateOtherClientAddress(){
+        putAddressInstance.put("complement", 4);
+        JSONObject address = new JSONObject(putAddressInstance);
+        existingId = 2L;
+
+        given()
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer " + clientToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(address.toString())
+                .when()
+                .put("/addresses/{id}", existingId)
+                .then()
+                .statusCode(403);
+    }
+
+    @Test
+    public void updateShouldReturnUnauthorizedWhenIdExistsAndInvalidToken(){
+        putAddressInstance.put("complement", 4);
+        JSONObject address = new JSONObject(putAddressInstance);
+        existingId = 2L;
+
+        given()
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer " + invalidToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(address.toString())
+                .when()
+                .put("/addresses/{id}", existingId)
+                .then()
+                .statusCode(401);
+    }
+
+
 }

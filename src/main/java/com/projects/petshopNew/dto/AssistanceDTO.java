@@ -1,9 +1,7 @@
 package com.projects.petshopNew.dto;
 
 import com.projects.petshopNew.entities.Assistance;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -16,12 +14,10 @@ public class AssistanceDTO implements Serializable {
     private Long id;
     @NotBlank(message = "Required field")
     private String description;
-    @NotBlank(message = "Required field")
-    @Positive(message = "Assistance value must be positive")
+    @PositiveOrZero(message = "Assistance value must be positive or zero")
     private Double assistanceValue;
-    @NotBlank(message = "Required field")
-    @FutureOrPresent
     private Instant date;
+    @NotNull
     private Long petId;
 
     public AssistanceDTO(){}

@@ -2,6 +2,7 @@ package com.projects.petshopNew.dto;
 
 import com.projects.petshopNew.entities.Address;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
@@ -23,6 +24,7 @@ public class AddressDTO implements Serializable {
     @Positive(message = "Complement must be positive")
     private Integer complement;
     private String tag;
+    @NotNull
     private Long clientId;
 
     public AddressDTO(){}

@@ -2,6 +2,7 @@ package com.projects.petshopNew.dto;
 
 import com.projects.petshopNew.entities.Pet;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 
 import java.io.Serial;
@@ -20,7 +21,9 @@ public class PetDTO implements Serializable {
     @Past(message = "Birthdate must be in the past")
     private Instant birthDate;
     private String imgUrl;
+    @NotNull
     private Long clientId;
+    @NotNull
     private Long breedId;
     private final List<AssistanceDTO> assistances = new ArrayList<>();
 

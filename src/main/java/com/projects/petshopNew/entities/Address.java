@@ -23,7 +23,7 @@ public class Address implements Serializable {
     private String city;
     @Nullable
     private String neighborhood;
-    //@Nullable
+    @Nullable
     private Integer complement;
     @Nullable
     private String tag;

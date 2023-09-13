@@ -45,7 +45,7 @@ public class AddressResourceTests {
     }
 
     @Test
-    public void updateShouldReturnObjectWhenIdExistsAndAdminLogged() {
+    public void updateShouldReturnAddressWhenIdExistsAndAdminLogged() {
         JSONObject address = new JSONObject(putAddressInstance);
         existingId = 1L;
 
@@ -87,7 +87,7 @@ public class AddressResourceTests {
     }
 
     @Test
-    public void updateShouldReturnBadRequestWhenIdExistsAndAdminLoggedAndInvalidComplement() {
+    public void updateShouldReturnBadRequestWhenIdExistsAndInvalidComplementAndAdminLogged() {
         putAddressInstance.put("complement", "aaaaa");
         JSONObject address = new JSONObject(putAddressInstance);
         existingId = 1L;
@@ -105,7 +105,7 @@ public class AddressResourceTests {
     }
 
     @Test
-    public void updateShouldReturnInternalServerErrorWhenIdExistsAndAdminLoggedAndInvalidClientId() {
+    public void updateShouldReturnInternalServerErrorWhenIdExistsAndInvalidClientIdAndAdminLogged() {
         putAddressInstance.put("clientId", 1000);
         JSONObject address = new JSONObject(putAddressInstance);
         existingId = 1L;
@@ -123,7 +123,7 @@ public class AddressResourceTests {
     }
 
     @Test
-    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndAdminLoggedAndStreetIsInvalid() {
+    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndStreetIsInvalidAndAdminLogged() {
         putAddressInstance.put("street", "a");
         JSONObject address = new JSONObject(putAddressInstance);
         existingId = 1L;
@@ -141,7 +141,7 @@ public class AddressResourceTests {
     }
 
     @Test
-    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndAdminLoggedAndStreetIsBlank() {
+    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndStreetIsBlankAndAdminLogged() {
         putAddressInstance.put("street", "");
         JSONObject address = new JSONObject(putAddressInstance);
         existingId = 1L;
@@ -159,7 +159,7 @@ public class AddressResourceTests {
     }
 
     @Test
-    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndAdminLoggedAndCityIsBlank() {
+    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndCityIsBlankAndAdminLogged() {
         putAddressInstance.put("city", "");
         JSONObject address = new JSONObject(putAddressInstance);
         existingId = 1L;
@@ -177,7 +177,7 @@ public class AddressResourceTests {
     }
 
     @Test
-    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndAdminLoggedAndNeighborhoodIsBlank() {
+    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndNeighborhoodIsBlankAndAdminLogged() {
         putAddressInstance.put("neighborhood", "");
         JSONObject address = new JSONObject(putAddressInstance);
         existingId = 1L;
@@ -195,7 +195,7 @@ public class AddressResourceTests {
     }
 
     @Test
-    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndAdminLoggedAndComplementIsNegative() {
+    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndComplementIsNegativeAndAdminLogged() {
         putAddressInstance.put("complement", -20);
         JSONObject address = new JSONObject(putAddressInstance);
         existingId = 1L;
@@ -213,7 +213,7 @@ public class AddressResourceTests {
     }
 
     @Test
-    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndAdminLoggedAndComplementIsZero() {
+    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndComplementIsZeroAndAdminLogged() {
         putAddressInstance.put("complement", 0);
         JSONObject address = new JSONObject(putAddressInstance);
         existingId = 1L;
@@ -231,7 +231,25 @@ public class AddressResourceTests {
     }
 
     @Test
-    public void updateShouldReturnObjectWhenIdExistsAndClientLoggedTryToUpdateOwnAddress(){
+    public void updateShouldReturnUnprocessableEntityWhenIdExistsAndClientIdIsNullAndAdminLogged() {
+        putAddressInstance.put("clientId", null);
+        JSONObject address = new JSONObject(putAddressInstance);
+        existingId = 1L;
+
+        given()
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer " + adminToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(address.toString())
+        .when()
+                .put("/addresses/{id}", existingId)
+        .then()
+                .statusCode(422);
+    }
+
+    @Test
+    public void updateShouldReturnAddressWhenIdExistsAndClientLoggedTryToUpdateOwnAddress(){
         putAddressInstance.put("complement", 4);
         JSONObject address = new JSONObject(putAddressInstance);
         existingId = 1L;
@@ -283,6 +301,4 @@ public class AddressResourceTests {
                 .then()
                 .statusCode(401);
     }
-
-
 }
